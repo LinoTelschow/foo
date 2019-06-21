@@ -84,3 +84,9 @@ func CreateFromSlice(slice [][]float64) (m *Matrix, e error) {
 	}
 	return
 }
+
+// CopyMatrix copies the whole content of src to a new matrix
+func CopyMat(src *Matrix) (m *Matrix) {
+	m, _ = CreateFromSlice(src.entries)
+	return
+}
