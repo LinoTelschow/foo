@@ -10,3 +10,8 @@ type Matrix struct {
 	cols    int
 	entries [][]float64
 }
+
+// definiton of vector type
+type Vector struct {
+	entries []float64
+}

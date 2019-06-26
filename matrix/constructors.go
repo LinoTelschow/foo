@@ -1,4 +1,4 @@
-/*	This file describes methods to construct matrices
+/*	This file describes methods to construct matrices and vectors.
 	Author: Lino Telschow, tlino@student.ethz.ch
 */
 
@@ -47,7 +47,7 @@ func IdMat(r, c int) (m *Matrix, e error) {
 
 // CreateFromSlice creates a matrix from a 2d slice of type: [][]float64
 // Method assumes that all slices of []float64 have the same length
-func CreateFromSlice(slice [][]float64) (m *Matrix, e error) {
+func MatrixFromSlice(slice [][]float64) (m *Matrix, e error) {
 	// check argument
 	if len(slice) < 1 {
 		e = fmt.Errorf("Error: empty slice")
@@ -87,6 +87,38 @@ func CreateFromSlice(slice [][]float64) (m *Matrix, e error) {
 
 // CopyMatrix copies the whole content of src to a new matrix
 func CopyMat(src *Matrix) (m *Matrix) {
-	m, _ = CreateFromSlice(src.entries)
+	m, _ = MatrixFromSlice(src.entries)
+	return
+}
+
+// ZeroVec creates a zero vector with r rows and c column.
+// Return nil if invalid size parameter
+func ZeroVec(size int) (v *Vector) {
+	// check size
+	if size < 1 {
+		return
+	}
+	// create vector
+	v = new(Vector)
+	v.entries = make([]float64, size)
+	return v
+}
+
+// VecFromSlice creates a vector from a slice.
+// Returns nil, if zero sized slice
+func VecFromSlice(slice []float64) (v *Vector) {
+	// check slice
+	if len(slice) < 1 {
+		return
+	}
+	// create vector
+	v = ZeroVec(len(slice))
+	copy(v.entries, slice)
+	return v
+}
+
+// CopyVector copies the whole content of src to a new vector
+func CopyVector(src *Vector) (v *Vector) {
+	v = VecFromSlice(src.entries)
 	return
 }

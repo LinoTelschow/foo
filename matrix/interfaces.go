@@ -8,7 +8,7 @@ import (
 	"fmt"
 )
 
-// implements the Stringer interface
+// implements the Stringer interface for matrix type
 func (m Matrix) String() string {
 	var s string
 	// print dimension
@@ -24,6 +24,18 @@ func (m Matrix) String() string {
 		}
 		s = s + localString + "\n"
 	}
+	s = s + "---------------------------------------------------------------------------------------------------------------------\n"
+	return s
+}
+
+// implements the Stringer interface for vector type
+func (v Vector) String() string {
+	var s string
+	// print size
+	s = "---------------------------------------------------------------------------------------------------------------------\n"
+	s = s + fmt.Sprintf("Size: %d\n", len(v.entries))
+	s = s + "Vector: "
+	s = s + fmt.Sprintf("%v\n", v.entries)
 	s = s + "---------------------------------------------------------------------------------------------------------------------\n"
 	return s
 }
