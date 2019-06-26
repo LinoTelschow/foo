@@ -45,7 +45,7 @@ func (a *Matrix) Sub(b *Matrix) (c *Matrix, e error) {
 
 // Scale returns a scaled matrix by factor f
 // Returns nil pointer if factor = inf, or NaN
-/*func (a *Matrix) Scale(factor float64) (c *Matrix, e error) {
+func (a *Matrix) Scale(factor float64) (c *Matrix, e error) {
 	// check if factor is valid
 	if math.IsNaN(factor) {
 		e = fmt.Errorf("Error: factor is NaN")
@@ -60,9 +60,10 @@ func (a *Matrix) Sub(b *Matrix) (c *Matrix, e error) {
 		return
 	}
 
-	mult := multiply(factor)
-
-}*/
+	// multiply matrix a by factor
+	c = a.ApplyFunc(func (x float64) float64 {return x * factor})
+	return
+}
 
 // ApplyFunc returns a new matrix which contains the entries of a after applying func f
 func (a *Matrix) ApplyFunc(f func(float64) float64) (m *Matrix) {

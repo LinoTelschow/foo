@@ -9,7 +9,7 @@ import (
 )
 
 // implements the Stringer interface
-func (m *Matrix) String() string {
+func (m Matrix) String() string {
 	var s string
 	// print dimension
 	s = "---------------------------------------------------------------------------------------------------------------------\n"
