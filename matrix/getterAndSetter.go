@@ -69,3 +69,26 @@ func (m *Matrix) SetSafe(i, j int, v float64) (e error) {
 	m.entries[i][j] = v
 	return
 }
+
+// Get returns the i-th element in vector v.
+// Returns NaN if invalid index
+func (v *Vector) Get(i int) float64 {
+	// check if valid index
+	if i < 0 || i >= v.Size() {
+		return math.NaN()
+	}
+	// return element
+	return v.entries[i]
+}
+
+// Set sets the i-th entry to value.
+// If i is an ivalid index, then nothing is updated
+func (v *Vector) Set(i int, value float64) {
+	// check index
+	if i < 0 || i >= v.Size() {
+		return
+	}
+	// update i-th entry
+	v.entries[i] = value
+	return
+}
