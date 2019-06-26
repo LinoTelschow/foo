@@ -9,7 +9,7 @@ import (
 )
 
 // ZeroMat creates a zero matrix with r rows and c column
-func ZeroMat(r,c int) (m *Matrix, e error) {
+func ZeroMat(r, c int) (m *Matrix, e error) {
 	if r <= 0 || c <= 0 {
 		e = fmt.Errorf("Invalid dimensions")
 		return
@@ -29,9 +29,9 @@ func ZeroMat(r,c int) (m *Matrix, e error) {
 
 // IdMat creates a identity matrix with r rows and c column
 // The diagonal entries are set to 1
-func IdMat(r,c int) (m *Matrix, e error) {
+func IdMat(r, c int) (m *Matrix, e error) {
 	// create empty matrix
-	m, e = ZeroMat(r,c)
+	m, e = ZeroMat(r, c)
 	if e != nil {
 		return
 	}
