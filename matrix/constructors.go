@@ -37,7 +37,7 @@ func IdMat(r, c int) (m *Matrix, e error) {
 	// set diagonal to 1
 	for i := range m.rowVectors {
 		if i < m.cols {
-			m.rowVectors[i].Set(i,1.0)
+			m.rowVectors[i].Set(i, 1.0)
 		}
 	}
 	return

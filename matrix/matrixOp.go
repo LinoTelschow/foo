@@ -5,7 +5,6 @@
 package matrix
 
 import (
-	"fmt"
 	"math"
 )
 
@@ -69,7 +68,7 @@ func (a *Matrix) CWiseProd(b *Matrix) (c *Matrix) {
 	}
 	// allocate new matrix
 	c, _ = ZeroMat(a.rows, a.cols)
-	
+
 	// compute cwise product
 	for i := range a.rowVectors {
 		vecA := a.rowVectors[i]

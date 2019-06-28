@@ -20,7 +20,7 @@ func (m Matrix) String() string {
 	for i := range m.rowVectors {
 		localString := ""
 		vec := m.rowVectors[i]
-		for j := vec.entries {
+		for j := range vec.entries {
 			localString = localString + fmt.Sprintf("%10.4g ", vec.entries[j])
 		}
 		s = s + localString + "\n"
