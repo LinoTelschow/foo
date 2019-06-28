@@ -10,53 +10,48 @@ import (
 )
 
 // Add computes componentwise sum of matrices a and b.
-// Computes c = a + b, if dimensions match
-func (a *Matrix) Add(b *Matrix) (c *Matrix, e error) {
+// Computes c = a + b, if dimensions match.
+// Dimension mismatch returns nil
+func (a *Matrix) Add(b *Matrix) (c *Matrix) {
 	// check if dimensions match
 	if a.rows != b.rows || a.cols != b.cols {
-		e = fmt.Errorf("Error: Dimension missmatch")
 		return
 	}
 
 	// create new matrix
-	c, e = ZeroMat(a.rows, a.cols)
-	if e != nil {
-		return
-	}
+	c, _ = ZeroMat(a.rows, a.cols)
 
-	// iterate over matrices and add up
-	for i := range a.entries {
-		for j := range a.entries[i] {
-			c.entries[i][j] = a.entries[i][j] + b.entries[i][j]
-		}
+	// iterate over matrices and add up row vectors
+	for i := range a.rowVectors {
+		vecA := a.rowVectors[i]
+		vecB := b.rowVectors[i]
+		c.rowVectors[i] = vecA.Add(vecB)
 	}
 	return
 }
 
 // Sub computes componentwise differences of matrices a and b.
-// Computes c = a - b, if dimensions match
-func (a *Matrix) Sub(b *Matrix) (c *Matrix, e error) {
+// Computes c = a - b, if dimensions match.
+// Dimension mismatch returns nil
+func (a *Matrix) Sub(b *Matrix) (c *Matrix) {
 	// negate b
 	negB := b.ApplyFunc(func(x float64) float64 { return (-1) * x })
 	// compute diff
-	c, e = a.Add(negB)
+	c = a.Add(negB)
 	return
 }
 
 // Scale returns a scaled matrix by factor f.
 // Returns nil pointer if factor = inf, or NaN
-func (a *Matrix) Scale(factor float64) (c *Matrix, e error) {
+func (a *Matrix) Scale(factor float64) (c *Matrix) {
 	// check if factor is valid
 	if math.IsNaN(factor) {
-		e = fmt.Errorf("Error: factor is NaN")
 		return
 	}
 	if math.IsInf(factor, 1) {
-		e = fmt.Errorf("Error: factor is Inf")
 		return
 	}
 	if math.IsInf(factor, -1) {
-		e = fmt.Errorf("Error: factor is -Inf")
 		return
 	}
 
@@ -66,23 +61,20 @@ func (a *Matrix) Scale(factor float64) (c *Matrix, e error) {
 }
 
 // CWiseProd computes the compnent-wise product of matrices a and b.
-// Returns nil if sizes don't match
-func (a *Matrix) CWiseProd(b *Matrix) (c *Matrix, e error) {
+// Dimension mismatch returns nil
+func (a *Matrix) CWiseProd(b *Matrix) (c *Matrix) {
 	// check if sizes match
 	if a.rows != b.rows || a.cols != b.cols {
-		e = fmt.Errorf("Error: mismatching dimensions")
 		return
 	}
 	// allocate new matrix
-	c, e = ZeroMat(a.rows, a.cols)
-	if e != nil {
-		return
-	}
+	c, _ = ZeroMat(a.rows, a.cols)
+	
 	// compute cwise product
-	for i := range a.entries {
-		for j := range a.entries[i] {
-			c.entries[i][j] = a.entries[i][j] * b.entries[i][j]
-		}
+	for i := range a.rowVectors {
+		vecA := a.rowVectors[i]
+		vecB := b.rowVectors[i]
+		c.rowVectors[i] = vecA.CWiseProd(vecB)
 	}
 	return
 }
@@ -92,10 +84,9 @@ func (a *Matrix) ApplyFunc(f func(float64) float64) (m *Matrix) {
 	// create new matrix
 	m, _ = ZeroMat(a.rows, a.cols)
 
-	for i := range a.entries {
-		for j := range a.entries[i] {
-			m.entries[i][j] = f(a.entries[i][j])
-		}
+	for i := range a.rowVectors {
+		vec := a.rowVectors[i]
+		m.rowVectors[i] = vec.ApplyFunc(f)
 	}
 	return
 }

@@ -13,5 +13,5 @@ type Vector struct {
 type Matrix struct {
 	rows       int
 	cols       int
-	rowVectors []Vector
+	rowVectors []*Vector
 }

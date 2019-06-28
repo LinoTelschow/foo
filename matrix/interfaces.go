@@ -17,10 +17,11 @@ func (m Matrix) String() string {
 	s = s + "Matrix: \n"
 
 	// print matrix
-	for i := range m.entries {
+	for i := range m.rowVectors {
 		localString := ""
-		for j := range m.entries[i] {
-			localString = localString + fmt.Sprintf("%10.4g ", m.entries[i][j])
+		vec := m.rowVectors[i]
+		for j := vec.entries {
+			localString = localString + fmt.Sprintf("%10.4g ", vec.entries[j])
 		}
 		s = s + localString + "\n"
 	}

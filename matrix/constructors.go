@@ -18,11 +18,10 @@ func ZeroMat(r, c int) (m *Matrix, e error) {
 	m = new(Matrix)
 	m.rows = r
 	m.cols = c
-
 	// allocate array for entries
-	m.entries = make([][]float64, r)
-	for i := range m.entries {
-		m.entries[i] = make([]float64, c)
+	m.rowVectors = make([]*Vector, r)
+	for i := range m.rowVectors {
+		m.rowVectors[i] = ZeroVec(c)
 	}
 	return
 }
@@ -35,11 +34,10 @@ func IdMat(r, c int) (m *Matrix, e error) {
 	if e != nil {
 		return
 	}
-
 	// set diagonal to 1
-	for i := range m.entries {
+	for i := range m.rowVectors {
 		if i < m.cols {
-			m.entries[i][i] = 1.0
+			m.rowVectors[i].Set(i,1.0)
 		}
 	}
 	return
@@ -72,22 +70,21 @@ func MatrixFromSlice(slice [][]float64) (m *Matrix, e error) {
 	}
 
 	// Create matrix
-	m = new(Matrix)
-	m.rows = len(slice)
-	m.cols = col
-	m.entries = make([][]float64, len(slice))
-	for i := range m.entries {
-		// create rows
-		m.entries[i] = make([]float64, col)
+	m, _ = ZeroMat(len(slice), col)
+	for i := range m.rowVectors {
 		// copy values from input slice
-		copy(m.entries[i], slice[i])
+		copy(m.rowVectors[i].entries, slice[i])
 	}
 	return
 }
 
 // CopyMatrix copies the whole content of src to a new matrix
 func CopyMat(src *Matrix) (m *Matrix) {
-	m, _ = MatrixFromSlice(src.entries)
+	m, _ = ZeroMat(src.rows, src.cols)
+
+	for i := range m.rowVectors {
+		m.rowVectors[i] = CopyVector(src.rowVectors[i])
+	}
 	return
 }
 

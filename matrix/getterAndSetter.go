@@ -49,7 +49,7 @@ func (m *Matrix) GetSafe(i, j int) (elem float64, e error) {
 		return
 	}
 	// return elem
-	elem = m.entries[i][j]
+	elem = m.rowVector[i].entries[j]
 	return
 }
 
@@ -66,7 +66,7 @@ func (m *Matrix) SetSafe(i, j int, v float64) (e error) {
 		return
 	}
 	// set entry
-	m.entries[i][j] = v
+	m.m.rowVector[i].entries[j] = v
 	return
 }
 
