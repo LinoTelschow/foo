@@ -4,14 +4,14 @@
 
 package matrix
 
-// definition of matrix type
-type Matrix struct {
-	rows    int
-	cols    int
-	entries [][]float64
-}
-
 // definiton of vector type
 type Vector struct {
 	entries []float64
+}
+
+// definition of matrix type
+type Matrix struct {
+	rows       int
+	cols       int
+	rowVectors []Vector
 }
