@@ -13,6 +13,12 @@ func (a *Vector) Size() int {
 	return len(a.entries)
 }
 
+// CopyVector returns new vector with the same content
+func (a *Vector) CopyVec() (v *Vector) {
+	v = VecFromSlice(a.entries)
+	return
+}
+
 // Add returns c = a + b.
 // Return nil, if sizes not match.
 func (a *Vector) Add(b *Vector) (c *Vector) {

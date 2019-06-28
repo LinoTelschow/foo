@@ -8,6 +8,16 @@ import (
 	"math"
 )
 
+// CopyMatrix returns a new matrix with the same content
+func (a *Matrix) CopyMat() (m *Matrix) {
+	m, _ = ZeroMat(a.rows, a.cols)
+
+	for i := range m.rowVectors {
+		m.rowVectors[i] = a.rowVectors[i].CopyVec()
+	}
+	return
+}
+
 // Add computes componentwise sum of matrices a and b.
 // Computes c = a + b, if dimensions match.
 // Dimension mismatch returns nil

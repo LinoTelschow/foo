@@ -78,16 +78,6 @@ func MatrixFromSlice(slice [][]float64) (m *Matrix, e error) {
 	return
 }
 
-// CopyMatrix copies the whole content of src to a new matrix
-func CopyMat(src *Matrix) (m *Matrix) {
-	m, _ = ZeroMat(src.rows, src.cols)
-
-	for i := range m.rowVectors {
-		m.rowVectors[i] = CopyVector(src.rowVectors[i])
-	}
-	return
-}
-
 // ZeroVec creates a zero vector with r rows and c column.
 // Return nil if invalid size parameter
 func ZeroVec(size int) (v *Vector) {
@@ -112,10 +102,4 @@ func VecFromSlice(slice []float64) (v *Vector) {
 	v = ZeroVec(len(slice))
 	copy(v.entries, slice)
 	return v
-}
-
-// CopyVector copies the whole content of src to a new vector
-func CopyVector(src *Vector) (v *Vector) {
-	v = VecFromSlice(src.entries)
-	return
 }

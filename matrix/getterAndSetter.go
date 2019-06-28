@@ -70,6 +70,58 @@ func (m *Matrix) SetSafe(i, j int, v float64) (e error) {
 	return
 }
 
+// GetRow returns a new vector of the i-th row of matrix m.
+// Returns nil if invalid index
+func (m *Matrix) GetRow(i int) (v *Vector) {
+	// check if valid idx
+	if i < 0 || i >= m.rows {
+		return
+	}
+	// return vector
+	v = m.rowVectors[i].CopyVec()
+	return
+}
+
+// SetRow sets i-th row of matrix m.
+// Doesn't update, if invalid index or missmatching sizes,
+func (m *Matrix) SetRow(i int, vec *Vector) {
+	// check if valid i and vec
+	if i < 0 || i >= m.rows || vec.Size() != m.cols {
+		return
+	}
+	// update row
+	m.rowVectors[i] = vec.CopyVec()
+}
+
+// GetCol returns a new vector with the contents of j-th column
+// Returns nil if invalid index
+func (m *Matrix) GetCol(j int) (v *Vector) {
+	// check if valid idx
+	if j < 0 || j >= m.cols {
+		return
+	}
+	// return vector
+	v = ZeroVec(m.rows)
+	for i := range m.rowVectors {
+		v.entries[i] = m.rowVectors[i].Get(j)
+	}
+	return
+}
+
+// SetRow sets j-th column of matrix m.
+// Doesn't update, if invalid index or missmatching sizes,
+func (m *Matrix) SetCol(j int, vec *Vector) {
+	// check sizes
+	if j < 0 || j >= m.cols || vec.Size() != m.rows {
+		return
+	}
+	// update
+	for i := range m.rowVectors {
+		m.rowVectors[i].Set(j, vec.Get(i))
+	}
+
+}
+
 // Get returns the i-th element in vector v.
 // Returns NaN if invalid index
 func (v *Vector) Get(i int) float64 {
