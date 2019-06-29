@@ -19,8 +19,8 @@ func (m *Matrix) Cols() int {
 	return m.cols
 }
 
-// Get(i,j) returns the element in row i and column j
-// returns Nan if wrong index
+// Get(i,j) returns the element in row i and column j.
+// returns NaN if invalid index
 func (m *Matrix) Get(i, j int) float64 {
 	v, e := m.GetSafe(i, j)
 	if e != nil {
@@ -29,8 +29,8 @@ func (m *Matrix) Get(i, j int) float64 {
 	return v
 }
 
-// Set(i,j, v) sets the entry of row i and col j to value v
-// no update of invalid indices
+// Set(i,j, v) sets the entry of row i and col j to value v.
+// No update, if invalid indices
 func (m *Matrix) Set(i, j int, v float64) {
 	m.SetSafe(i, j, v)
 	return
@@ -93,7 +93,7 @@ func (m *Matrix) SetRow(i int, vec *Vector) {
 	m.rowVectors[i] = vec.CopyVec()
 }
 
-// GetCol returns a new vector with the contents of j-th column
+// GetCol returns a new vector with the contents of j-th column.
 // Returns nil if invalid index
 func (m *Matrix) GetCol(j int) (v *Vector) {
 	// check if valid idx
@@ -119,7 +119,6 @@ func (m *Matrix) SetCol(j int, vec *Vector) {
 	for i := range m.rowVectors {
 		m.rowVectors[i].Set(j, vec.Get(i))
 	}
-
 }
 
 // Get returns the i-th element in vector v.

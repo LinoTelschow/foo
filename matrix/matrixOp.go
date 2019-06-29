@@ -1,4 +1,4 @@
-/*	This file defines matrix operations
+/*	This file defines matrix methods
 	Author: Lino Telschow, tlino@student.ethz.ch
 */
 
@@ -8,7 +8,7 @@ import (
 	"math"
 )
 
-// CopyMatrix returns a new matrix with the same content
+// CopyMatrix returns a new matrix with the same contents
 func (a *Matrix) CopyMat() (m *Matrix) {
 	m, _ = ZeroMat(a.rows, a.cols)
 
@@ -20,16 +20,14 @@ func (a *Matrix) CopyMat() (m *Matrix) {
 
 // Add computes componentwise sum of matrices a and b.
 // Computes c = a + b, if dimensions match.
-// Dimension mismatch returns nil
+// Dimension mismatch returns nil.
 func (a *Matrix) Add(b *Matrix) (c *Matrix) {
 	// check if dimensions match
 	if a.rows != b.rows || a.cols != b.cols {
 		return
 	}
-
 	// create new matrix
 	c, _ = ZeroMat(a.rows, a.cols)
-
 	// iterate over matrices and add up row vectors
 	for i := range a.rowVectors {
 		vecA := a.rowVectors[i]
@@ -63,7 +61,6 @@ func (a *Matrix) Scale(factor float64) (c *Matrix) {
 	if math.IsInf(factor, -1) {
 		return
 	}
-
 	// multiply matrix a by factor
 	c = a.ApplyFunc(func(x float64) float64 { return x * factor })
 	return
@@ -78,7 +75,6 @@ func (a *Matrix) CWiseProd(b *Matrix) (c *Matrix) {
 	}
 	// allocate new matrix
 	c, _ = ZeroMat(a.rows, a.cols)
-
 	// compute cwise product
 	for i := range a.rowVectors {
 		vecA := a.rowVectors[i]

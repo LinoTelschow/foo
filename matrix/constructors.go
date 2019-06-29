@@ -1,4 +1,4 @@
-/*	This file describes methods to construct matrices and vectors.
+/*	This file implements functions to construct matrices and vectors.
 	Author: Lino Telschow, tlino@student.ethz.ch
 */
 
@@ -26,7 +26,7 @@ func ZeroMat(r, c int) (m *Matrix, e error) {
 	return
 }
 
-// IdMat creates a identity matrix with r rows and c column
+// IdMat creates a identity matrix with r rows and c columns
 // The diagonal entries are set to 1
 func IdMat(r, c int) (m *Matrix, e error) {
 	// create empty matrix
@@ -38,6 +38,8 @@ func IdMat(r, c int) (m *Matrix, e error) {
 	for i := range m.rowVectors {
 		if i < m.cols {
 			m.rowVectors[i].Set(i, 1.0)
+		} else {
+			break
 		}
 	}
 	return
@@ -46,21 +48,18 @@ func IdMat(r, c int) (m *Matrix, e error) {
 // CreateFromSlice creates a matrix from a 2d slice of type: [][]float64
 // Method assumes that all slices of []float64 have the same length
 func MatrixFromSlice(slice [][]float64) (m *Matrix, e error) {
-	// check argument
+	// check size of slice
 	if len(slice) < 1 {
 		e = fmt.Errorf("Error: empty slice")
 		return
 	}
-
 	// reference value for col size
 	col := len(slice[0])
-
 	// check if empty col
 	if col == 0 {
 		e = fmt.Errorf("Error: empty column in slice")
 		return
 	}
-
 	// inspect number of cols
 	for i := range slice {
 		if col != len(slice[i]) {
@@ -68,7 +67,6 @@ func MatrixFromSlice(slice [][]float64) (m *Matrix, e error) {
 			return
 		}
 	}
-
 	// Create matrix
 	m, _ = ZeroMat(len(slice), col)
 	for i := range m.rowVectors {
