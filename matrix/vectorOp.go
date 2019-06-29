@@ -13,6 +13,29 @@ func (a *Vector) Size() int {
 	return len(a.entries)
 }
 
+// Get returns the i-th element in vector v.
+// Returns NaN if invalid index
+func (v *Vector) Get(i int) float64 {
+	// check if valid index
+	if i < 0 || i >= v.Size() {
+		return math.NaN()
+	}
+	// return element
+	return v.entries[i]
+}
+
+// Set sets the i-th entry to value.
+// If i is an ivalid index, then nothing is updated
+func (v *Vector) Set(i int, value float64) {
+	// check index
+	if i < 0 || i >= v.Size() {
+		return
+	}
+	// update i-th entry
+	v.entries[i] = value
+	return
+}
+
 // CopyVector returns a new vector with the same content
 func (a *Vector) CopyVec() (v *Vector) {
 	v = VecFromSlice(a.entries)
@@ -21,7 +44,7 @@ func (a *Vector) CopyVec() (v *Vector) {
 
 // Mat returns n x 1 matrix with the values of a.
 // n = Size of vector.
-func (a *Vector) Mat() (m *Matrix){
+func (a *Vector) Mat() (m *Matrix) {
 	m, _ = ZeroMat(a.Size(), 1)
 	m.SetCol(0, a)
 	return
@@ -48,21 +71,21 @@ func (a *Vector) Merge(b *Vector) (c *Vector) {
 	}
 	// copy values from b
 	for i := range b.entries {
-		c.entries[offset + i] = b.entries[i]
+		c.entries[offset+i] = b.entries[i]
 	}
 	return
 }
 
 // GetSubVec returns the subvector from index s (inclusive)
-// to index e (exclusive). (python synthax: returns a[s:e]).
+// to index e (inclusive). (returns entries: a[s], ... , a[e]).
 // Returns nil if invalid indices.
 func (a *Vector) GetSubVec(s, e int) (v *Vector) {
 	// check indices
-	if s < 0 || s >= a.Size() || e < 0 || e > a.Size() || s >= e {
+	if s < 0 || s >= a.Size() || e < 0 || e >= a.Size() || s > e {
 		return
 	}
 	// copy values in new vector
-	length := e - s
+	length := e - s + 1
 	v = ZeroVec(length)
 	for i := range v.entries {
 		v.entries[i] = a.entries[s+i]
@@ -70,15 +93,15 @@ func (a *Vector) GetSubVec(s, e int) (v *Vector) {
 	return
 }
 
-// SetSubVec sets subvector from s (inclusive) to e (exclusive).
-// in a to the values of b. (python synthax a[s:e] = b).
+// SetSubVec sets subvector from s (inclusive) to e (inclusive).
+// in a to the values of b. (modifies entries: a[s], ... , a[e])
 // No update if invalid indices or missmatching sizes.
 func (a *Vector) SetSubVec(s int, e int, b *Vector) {
 	// check indices
-	if s < 0 || s >= a.Size() || e < 0 || e > a.Size() || s >= e {
+	if s < 0 || s >= a.Size() || e < 0 || e >= a.Size() || s > e {
 		return
 	}
-	length := e - s
+	length := e - s + 1
 	// check sizes
 	if a.Size() < b.Size() || b.Size() != length {
 		return
