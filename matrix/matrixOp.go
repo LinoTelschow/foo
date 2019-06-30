@@ -131,6 +131,39 @@ func (a *Matrix) CopyMat() (m *Matrix) {
 	return
 }
 
+// GetBlock returns a submatrix of a.
+// urow = upper row, ucol = upper col
+// lrow = lower row, lcol = lower col
+// example:              |. . . . . . .|
+//  x = (urow, ucol)     |. x-------- .|
+//  y = (lrow, lcol)     |. | . . . | .|
+//                       |. --------y .|
+//                       |. . . . . . .|
+// if invalid indices returns nil.
+// The indices are always inclusive.
+// (like in GetSubVec and SetSubVec)
+func (a *Matrix) GetBlock(urow, ucol, lrow, lcol int) (b *Matrix) {
+	// check range
+	if urow < 0 || urow >= a.Rows() || lrow < 0 || lrow >= a.Rows() ||
+		ucol < 0 || ucol >= a.Cols() || lcol < 0 || lcol >= a.Cols() {
+		return
+	}
+	// check
+	if urow > lrow || ucol > lcol {
+		return
+	}
+	// define dimensions
+	r := lrow - urow + 1
+	c := lcol - ucol + 1
+	// create matrix
+	b = emptyMat(r, c)
+	for i := range b.rowVectors {
+		vec := a.rowVectors[urow+i].GetSubVec(ucol, lcol)
+		b.rowVectors[i] = vec
+	}
+	return
+}
+
 // Add computes componentwise sum of matrices a and b.
 // Computes c = a + b, if dimensions match.
 // Dimension mismatch returns nil.

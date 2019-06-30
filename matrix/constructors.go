@@ -8,6 +8,15 @@ import (
 	"fmt"
 )
 
+// emptyMat creates a matrix with empty rowVector field.
+func emptyMat(r, c int) (m *Matrix) {
+	m = new(Matrix)
+	m.rows = r
+	m.cols = c
+	m.rowVectors = make([]*Vector, r)
+	return
+}
+
 // ZeroMat creates a zero matrix with r rows and c column
 func ZeroMat(r, c int) (m *Matrix, e error) {
 	if r <= 0 || c <= 0 {

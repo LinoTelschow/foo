@@ -150,10 +150,7 @@ func (a *Vector) Scale(factor float64) (v *Vector) {
 	if math.IsNaN(factor) {
 		return
 	}
-	if math.IsInf(factor, 1) {
-		return
-	}
-	if math.IsInf(factor, -1) {
+	if math.IsInf(factor, 1) || math.IsInf(factor, -1) {
 		return
 	}
 	// create scaled matrix
@@ -187,6 +184,82 @@ func (a *Vector) Dot(b *Vector) float64 {
 	for i := range a.entries {
 		result += a.entries[i] * b.entries[i]
 	}
+	return result
+}
+
+// Mean returns the mean of the vector
+func (a *Vector) Mean() float64 {
+	var result float64 = 0
+	for i := range a.entries {
+		result += a.entries[i]
+	}
+	result = result / float64(a.Size())
+	return result
+}
+
+// Min returns the minimum and it's index
+func (a *Vector) Min() (idx int, min float64) {
+	min = a.entries[0]
+	for i := range a.entries {
+		if a.entries[i] < min {
+			idx = i
+			min = a.entries[i]
+		}
+	}
+	return
+}
+
+// Max returns the maximum and it's index
+func (a *Vector) Max() (idx int, max float64) {
+	max = a.entries[0]
+	for i := range a.entries {
+		if a.entries[i] > max {
+			idx = i
+			max = a.entries[i]
+		}
+	}
+	return
+}
+
+// MinIdx returns the index of the minimum
+func (a *Vector) MinIdx() int {
+	idx, _ := a.Min()
+	return idx
+}
+
+// MinValue returns the minimum
+func (a *Vector) MinValue() float64 {
+	_, value := a.Min()
+	return value
+}
+
+// MaxIdx returns the index of the maximum
+func (a *Vector) MaxIdx() int {
+	idx, _ := a.Max()
+	return idx
+}
+
+// MaxValue returns the maximum
+func (a *Vector) MaxValue() float64 {
+	_, value := a.Max()
+	return value
+}
+
+// Var returns the variance of the vector entries
+func (a *Vector) Var() float64 {
+	// special case: size = 1
+	if a.Size() == 1 {
+		return 0
+	}
+	// normal case: size > 1
+	vecMean := a.Mean()
+	vecSize := float64(a.Size())
+	squaredMean := vecMean * vecMean
+	var sumOfSquares float64 = 0
+	for i := range a.entries {
+		sumOfSquares += a.entries[i] * a.entries[i]
+	}
+	result := (float64(1) / float64(vecSize-1.0)) * (sumOfSquares - vecSize*squaredMean)
 	return result
 }
 
