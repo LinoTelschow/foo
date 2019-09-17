@@ -49,7 +49,7 @@ func (m *Matrix) GetSafe(i, j int) (elem float64, e error) {
 		return
 	}
 	// return elem
-	elem = m.rowVectors[i].entries[j]
+	elem = m.getEntry(i,j)
 	return
 }
 
@@ -66,7 +66,7 @@ func (m *Matrix) SetSafe(i, j int, v float64) (e error) {
 		return
 	}
 	// set entry
-	m.rowVectors[i].entries[j] = v
+	m.setEntry(i,j, v)
 	return
 }
 
@@ -77,8 +77,12 @@ func (m *Matrix) GetRow(i int) (v *Vector) {
 	if i < 0 || i >= m.rows {
 		return
 	}
-	// return vector
-	v = m.rowVectors[i].CopyVec()
+	// create vector
+	v = ZeroVec(m.cols)
+	// copy values
+	for j := 0; j < m.cols; j++ {
+		v.entries[j] = m.getEntry(i,j)
+	}
 	return
 }
 
@@ -89,8 +93,10 @@ func (m *Matrix) SetRow(i int, vec *Vector) {
 	if i < 0 || i >= m.rows || vec.Size() != m.cols {
 		return
 	}
-	// update row
-	m.rowVectors[i] = vec.CopyVec()
+	// update i-th row
+	for j := 0; j < m.cols; j++ {
+		m.setEntry(i,j, vec.entries[j])
+	}
 }
 
 // GetCol returns a new vector with the contents of j-th column.
@@ -102,8 +108,8 @@ func (m *Matrix) GetCol(j int) (v *Vector) {
 	}
 	// return vector
 	v = ZeroVec(m.rows)
-	for i := range m.rowVectors {
-		v.entries[i] = m.rowVectors[i].Get(j)
+	for i := 0; i < m.rows; i++ {
+		v.entries[i] = m.getEntry(i,j)
 	}
 	return
 }
@@ -115,9 +121,9 @@ func (m *Matrix) SetCol(j int, vec *Vector) {
 	if j < 0 || j >= m.cols || vec.Size() != m.rows {
 		return
 	}
-	// update
-	for i := range m.rowVectors {
-		m.rowVectors[i].Set(j, vec.Get(i))
+	// update j-th column
+	for i := 0; i < m.rows; i++ {
+		m.setEntry(i,j, vec.entries[i])
 	}
 }
 
@@ -125,8 +131,9 @@ func (m *Matrix) SetCol(j int, vec *Vector) {
 func (a *Matrix) CopyMat() (m *Matrix) {
 	m, _ = ZeroMat(a.rows, a.cols)
 
-	for i := range m.rowVectors {
-		m.rowVectors[i] = a.rowVectors[i].CopyVec()
+	// copy entries
+	for i := range a.entries {
+		m.entries[i] = a.entries[i]
 	}
 	return
 }
@@ -156,10 +163,12 @@ func (a *Matrix) GetBlock(urow, ucol, lrow, lcol int) (b *Matrix) {
 	r := lrow - urow + 1
 	c := lcol - ucol + 1
 	// create matrix
-	b = emptyMat(r, c)
-	for i := range b.rowVectors {
-		vec := a.rowVectors[urow+i].GetSubVec(ucol, lcol)
-		b.rowVectors[i] = vec
+	b, _ = ZeroMat(r, c)
+	// copy entries
+	for i := 0; i < b.rows; i++ {
+		for j := 0; j < b.cols; j++ {
+			b.setEntry(i,j, a.getEntry(urow+i, ucol + j))
+		}
 	}
 	return
 }
@@ -174,11 +183,9 @@ func (a *Matrix) Add(b *Matrix) (c *Matrix) {
 	}
 	// create new matrix
 	c, _ = ZeroMat(a.rows, a.cols)
-	// iterate over matrices and add up row vectors
-	for i := range a.rowVectors {
-		vecA := a.rowVectors[i]
-		vecB := b.rowVectors[i]
-		c.rowVectors[i] = vecA.Add(vecB)
+	// iterate over matrices and add up
+	for i := range a.entries {
+		c.entries[i] = a.entries[i] + b.entries[i]
 	}
 	return
 }
@@ -187,10 +194,16 @@ func (a *Matrix) Add(b *Matrix) (c *Matrix) {
 // Computes c = a - b, if dimensions match.
 // Dimension mismatch returns nil
 func (a *Matrix) Sub(b *Matrix) (c *Matrix) {
-	// negate b
-	negB := b.ApplyFunc(func(x float64) float64 { return (-1) * x })
-	// compute diff
-	c = a.Add(negB)
+	// check if dimensions match
+	if a.rows != b.rows || a.cols != b.cols {
+		return
+	}
+	// create new matrix
+	c, _ = ZeroMat(a.rows, a.cols)
+	// iterate over matrices and substract
+	for i := range a.entries {
+		c.entries[i] = a.entries[i] - b.entries[i]
+	}
 	return
 }
 
@@ -222,10 +235,8 @@ func (a *Matrix) CWiseProd(b *Matrix) (c *Matrix) {
 	// allocate new matrix
 	c, _ = ZeroMat(a.rows, a.cols)
 	// compute cwise product
-	for i := range a.rowVectors {
-		vecA := a.rowVectors[i]
-		vecB := b.rowVectors[i]
-		c.rowVectors[i] = vecA.CWiseProd(vecB)
+	for i := range a.entries {
+		c.entries[i] = a.entries[i] * b.entries[i]
 	}
 	return
 }
@@ -234,10 +245,21 @@ func (a *Matrix) CWiseProd(b *Matrix) (c *Matrix) {
 func (a *Matrix) ApplyFunc(f func(float64) float64) (m *Matrix) {
 	// create new matrix
 	m, _ = ZeroMat(a.rows, a.cols)
-
-	for i := range a.rowVectors {
-		vec := a.rowVectors[i]
-		m.rowVectors[i] = vec.ApplyFunc(f)
+	// apply function on elements
+	for i := range a.entries {
+		m.entries[i] = f(a.entries[i])
 	}
 	return
+}
+
+// getEntry returns the entry in the i row and j column.
+// not exported, intended to use as building block for library
+func (a *Matrix) getEntry(i,j int) float64 {
+	return a.entries[a.cols * i + j]
+}
+
+// setEntry sets value v to the matrix element at row i and column j.
+// not exported, intended to use as building block for library
+func (a *Matrix) setEntry(i,j int, v float64) {
+	a.entries[a.cols * i + j] = v
 }

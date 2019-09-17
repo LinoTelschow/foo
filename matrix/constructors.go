@@ -8,15 +8,6 @@ import (
 	"fmt"
 )
 
-// emptyMat creates a matrix with empty rowVector field.
-func emptyMat(r, c int) (m *Matrix) {
-	m = new(Matrix)
-	m.rows = r
-	m.cols = c
-	m.rowVectors = make([]*Vector, r)
-	return
-}
-
 // ZeroMat creates a zero matrix with r rows and c column
 func ZeroMat(r, c int) (m *Matrix, e error) {
 	if r <= 0 || c <= 0 {
@@ -28,10 +19,7 @@ func ZeroMat(r, c int) (m *Matrix, e error) {
 	m.rows = r
 	m.cols = c
 	// allocate array for entries
-	m.rowVectors = make([]*Vector, r)
-	for i := range m.rowVectors {
-		m.rowVectors[i] = ZeroVec(c)
-	}
+	m.entries = make([]float64, r*c)
 	return
 }
 
@@ -44,9 +32,12 @@ func IdMat(r, c int) (m *Matrix, e error) {
 		return
 	}
 	// set diagonal to 1
-	for i := range m.rowVectors {
-		if i < m.cols {
-			m.rowVectors[i].Set(i, 1.0)
+	offset := 0
+	nrOfEntries := m.rows * m.cols
+	for i := 0; i < m.rows; i++ {
+		if (i*c + offset) < nrOfEntries {
+			m.entries[i*c+offset] = 1.0
+			offset++
 		} else {
 			break
 		}
@@ -78,9 +69,12 @@ func MatrixFromSlice(slice [][]float64) (m *Matrix, e error) {
 	}
 	// Create matrix
 	m, _ = ZeroMat(len(slice), col)
-	for i := range m.rowVectors {
-		// copy values from input slice
-		copy(m.rowVectors[i].entries, slice[i])
+	// copy entries
+	c := m.cols
+	for i := 0; i < m.rows; i++ {
+		for j := 0; j < m.cols; j++ {
+			m.entries[i*c+j] = slice[i][j]
+		}
 	}
 	return
 }

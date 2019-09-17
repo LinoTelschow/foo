@@ -11,17 +11,17 @@ import (
 // implements the Stringer interface for matrix type
 func (m Matrix) String() string {
 	var s string
+	c := m.cols
 	// print dimension
 	s = "---------------------------------------------------------------------------------------------------------------------\n"
 	s = s + fmt.Sprintf("Dimension: Rows: %d \t Cols: %d \n", m.rows, m.cols)
 	s = s + "Matrix: \n"
 
 	// print matrix
-	for i := range m.rowVectors {
+	for i := 0; i < m.rows; i++ {
 		localString := ""
-		vec := m.rowVectors[i]
-		for j := range vec.entries {
-			localString = localString + fmt.Sprintf("%10.4g ", vec.entries[j])
+		for j := 0; j < m.cols; j++ {
+			localString = localString + fmt.Sprintf("%10.4g ", m.entries[c*i+j])
 		}
 		s = s + localString + "\n"
 	}

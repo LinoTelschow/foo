@@ -11,7 +11,7 @@ type Vector struct {
 
 // definition of matrix type
 type Matrix struct {
-	rows       int
-	cols       int
-	rowVectors []*Vector
+	rows    int
+	cols    int
+	entries []float64
 }
